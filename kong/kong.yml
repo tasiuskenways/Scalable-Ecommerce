@@ -1,0 +1,10 @@
+_format_version: "3.0"
+services:
+  - name: crypto-service
+    url: http://crypto-service:3002
+    routes:
+      - name: crypto-route
+        paths:
+          - /api/decrypt
+          - /api/encrypt
+        strip_path: false
