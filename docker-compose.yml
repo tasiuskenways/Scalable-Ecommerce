@@ -13,6 +13,12 @@ services:
     volumes:
       - ./kong/kong.yml:/etc/kong/kong.yml
       - ./kong/kong.conf:/etc/kong/kong.conf
+    networks:
+      - public-net
+      - internal-net
+    depends_on:
+      - crypto-service
+      - user-service
 
   crypto-service:
     build:
@@ -24,8 +30,70 @@ services:
     env_file:
       - ./crypto-service/.env
     networks:
-      - internal_net
+      - internal-net
+
+  # -------------------------
+  # User Service
+  # -------------------------
+  user-service:
+    build: ./user-service
+    env_file: ./user-service/.env.user
+    networks:
+      - internal-net
+    expose:
+      - 3003
+    depends_on:
+      - user-db
+      - user-redis
+
+  user-migrate:
+    build: ./user-service
+    command: ["./user-service", "-migrate", "true"]
+    env_file: ./user-service/.env.user
+    depends_on:
+      - user-db
+    networks:
+      - internal-net
+
+  # DB for User Service
+  user-db:
+    image: postgres:16-alpine
+    container_name: user-db
+    env_file: ./user-service/.env.user
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    networks:
+      - internal-net
+    expose:
+      - 5432
+
+  # Redis for User Service
+  user-redis:
+    image: redis:7-alpine
+    container_name: user-redis
+    env_file: ./user-service/.env.user
+    networks:
+      - internal-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: >
+      sh -c "
+        if [ -n '${REDIS_PASSWORD}' ]; then
+          redis-server --requirepass '${REDIS_PASSWORD}'
+        else
+          redis-server
+        fi
+      "
+    expose:
+      - 6379
+
+volumes:
+  user-db-data:
 
 networks:
-  internal_net:
-    driver: bridge
+  public-net:   # exposed to host
+  internal-net: # private between services

@@ -8,3 +8,13 @@ services:
           - /api/decrypt
           - /api/encrypt
         strip_path: false
+  - name: user-service
+    url: http://user-service:3003
+    routes:
+      - name: user-route
+        paths:
+          - /api/auth/register
+          - /api/auth/login
+          - /api/auth/refresh
+          - /api/auth/logout
+        strip_path: false
