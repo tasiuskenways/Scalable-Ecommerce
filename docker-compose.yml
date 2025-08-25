@@ -1,12 +1,15 @@
 services:
   kong:
-    image: kong:3.4
+    build:
+      context: ./kong
+      dockerfile: Dockerfile
     container_name: kong
     restart: always
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /etc/kong/kong.yml
       KONG_PROXY_LISTEN: "0.0.0.0:3000"
+      KONG_LOG_LEVEL: debug
     ports:
       - "3000:3000" # Public API gateway
       - "3001:3001" # Admin API
