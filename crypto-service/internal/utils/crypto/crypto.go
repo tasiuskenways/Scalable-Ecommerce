@@ -9,8 +9,10 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 )
 
 // GenerateRSAKeyPair generates a new RSA key pair
@@ -156,6 +158,39 @@ func EncryptAES(key, plaintext []byte) ([]byte, error) {
 
 	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
 	return append(nonce, ciphertext...), nil
+}
+
+// GenerateAndSaveRSAKeyPair generates a new RSA key pair and saves them as PEM files in the specified directory
+// Returns the paths to the generated private and public key files
+func GenerateAndSaveRSAKeyPair(dirPath string) (privateKeyPath, publicKeyPath string, err error) {
+	// Create directory if it doesn't exist
+	if err := os.MkdirAll(dirPath, 0700); err != nil {
+		return "", "", fmt.Errorf("failed to create directory: %v", err)
+	}
+
+	// Generate RSA key pair
+	privateKey, publicKey, err := GenerateRSAKeyPair()
+	if err != nil {
+		return "", "", fmt.Errorf("failed to generate RSA key pair: %v", err)
+	}
+
+	// Define file paths
+	privateKeyPath = filepath.Join(dirPath, "private_key.pem")
+	publicKeyPath = filepath.Join(dirPath, "public_key.pem")
+
+	// Save private key
+	if err := SavePEMKey(privateKeyPath, privateKey); err != nil {
+		return "", "", fmt.Errorf("failed to save private key: %v", err)
+	}
+
+	// Save public key
+	if err := SavePublicPEMKey(publicKeyPath, publicKey); err != nil {
+		// Clean up private key file if public key save fails
+		_ = os.Remove(privateKeyPath)
+		return "", "", fmt.Errorf("failed to save public key: %v", err)
+	}
+
+	return privateKeyPath, publicKeyPath, nil
 }
 
 // DecryptAES decrypts data using AES-GCM
