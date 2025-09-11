@@ -22,6 +22,7 @@ services:
     depends_on:
       - crypto-service
       - user-service
+      - product-service
 
   crypto-service:
     build:
@@ -49,6 +50,57 @@ services:
       - user-db
       - user-redis
 
+  # -------------------------
+  # Product Service
+  # -------------------------
+  product-service:
+    build: ./product-service
+    env_file: ./product-service/.env.product
+    networks:
+      - internal-net
+    expose:
+      - 3004
+    depends_on:
+      - product-db
+      - product-redis
+
+  product-db:
+    image: postgres:16-alpine
+    container_name: product-db
+    env_file: ./product-service/.env.product
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+    networks:
+      - internal-net
+    expose:
+      - 5432
+
+  product-redis:
+    image: redis:7-alpine
+    container_name: product-redis
+    env_file: ./product-service/.env.product
+    networks:
+      - internal-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: >
+      sh -c "
+        if [ -n '${REDIS_PASSWORD}' ]; then
+          redis-server --requirepass '${REDIS_PASSWORD}'
+        else
+          redis-server
+        fi
+      "
+    expose:
+      - 6379
+
+  # -------------------------
+  # User Migrate
+  # -------------------------
   user-migrate:
     build: ./user-service
     command: ["./user-service", "-migrate", "true"]
@@ -58,7 +110,6 @@ services:
     networks:
       - internal-net
 
-  # DB for User Service
   user-db:
     image: postgres:16-alpine
     container_name: user-db
@@ -70,7 +121,6 @@ services:
     expose:
       - 5432
 
-  # Redis for User Service
   user-redis:
     image: redis:7-alpine
     container_name: user-redis
@@ -96,6 +146,7 @@ services:
 
 volumes:
   user-db-data:
+  product-db-data:
 
 networks:
   public-net:   # exposed to host
