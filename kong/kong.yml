@@ -16,3 +16,11 @@ services:
         paths:
           - /api/auth/refresh
           - /api/auth/logout
+
+  - name: product-service
+    url: http://product-service:3004
+    routes:
+      - name: product-route
+        paths:
+          - /api/product
+        strip_path: false
