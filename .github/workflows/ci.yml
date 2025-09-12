@@ -38,6 +38,7 @@ jobs:
 
   build-test:
     needs: detect-changes
+    if: ${{ fromJson(needs.detect-changes.outputs.services).include != '' }}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.detect-changes.outputs.services) }}
@@ -47,32 +48,22 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
-
-      # ✅ Run Go lint & vet
       - name: Lint & Vet
         working-directory: service-${{ matrix.service }}
         run: |
           go vet ./...
           go install golang.org/x/lint/golint@latest
-          golint ./... || true  # don't fail build, just warn
-
-      # ✅ Run Go tests
+          golint ./... || true
       - name: Run Tests
         working-directory: service-${{ matrix.service }}
         run: go test ./... -v
-
-      # ✅ Security scan with gosec
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
           args: ./service-${{ matrix.service }}/...
-
-      # ✅ Build Docker Image
       - name: Build Docker Image
         run: |
           docker build -t ghcr.io/${{ github.repository }}/service-${{ matrix.service }}:latest service-${{ matrix.service }}
-
-      # ✅ Scan Docker Image for vulnerabilities
       - name: Scan Docker Image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -80,8 +71,6 @@ jobs:
           format: table
           exit-code: '1'
           ignore-unfixed: true
-
-      # ✅ Push Docker Image
       - name: Push Docker Image
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
