@@ -16,11 +16,12 @@ import (
 	"tasius.my.id/SE/user-service/internal/utils/jwt"
 )
 
-func main()  {
+func main() {
 
 	cfg := config.Load()
 
 	runMigration := flag.Bool("migrate", false, "Run migration")
+	resetDb := flag.Bool("resetDb", false, "Reset DB")
 	flag.Parse()
 
 	var postgres *gorm.DB
@@ -28,16 +29,13 @@ func main()  {
 
 	if *runMigration {
 		// Connect to database with running migrations
-		postgres, err = db.NewPostgresConnection(cfg)
-		if err != nil {
-			log.Fatal("Failed to connect to database:", err)
-		}
-	} else {
-		// Connect to database without running migrations
-		postgres, err = db.ConnectWithoutMigration(cfg)
-		if err != nil {
-			log.Fatal("Failed to connect to database:", err)
-		}
+		db.NewPostgresConnection(cfg, *resetDb)
+		return
+	}
+
+	postgres, err = db.ConnectWithoutMigration(cfg)
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
 	}
 
 	redis, err := db.NewRedisConnection(cfg)
@@ -78,15 +76,15 @@ func main()  {
 	}))
 
 	routes.SetupRoutes(app, routes.RoutesDependencies{
-		Db:         postgres,
+		Db:          postgres,
 		RedisClient: redis,
-		Config:     cfg,
-		JWTManager: jwtManager,
+		Config:      cfg,
+		JWTManager:  jwtManager,
 	})
-	
+
 	log.Printf("Server starting on port %s", cfg.AppPort)
 	if err := app.Listen(":" + cfg.AppPort); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
-	
+
 }

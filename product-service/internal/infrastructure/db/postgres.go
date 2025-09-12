@@ -11,14 +11,14 @@ import (
 )
 
 // NewPostgresConnection creates a new database connection and runs migrations
-func NewPostgresConnection(cfg *config.Config) (*gorm.DB, error) {
+func NewPostgresConnection(cfg *config.Config, resetDb bool) (*gorm.DB, error) {
 	db, err := ConnectWithoutMigration(cfg)
 	if err != nil {
 		return nil, err
 	}
 
 	// Run migrations
-	if err := Migrate(db); err != nil {
+	if err := Migrate(db, resetDb); err != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
 
