@@ -74,11 +74,12 @@ jobs:
         working-directory: ${{ format('{0}-service', matrix.service) }}
 
       - name: Install gosec
-        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Run gosec
         run: |
-          export PATH=$PATH:$(go env GOPATH)/bin
           gosec ./.../${{ format('{0}-service', matrix.service) }}
 
       - name: Lint
