@@ -109,7 +109,7 @@ jobs:
 
 
   security-scan:
-    needs: build-test
+    needs: detect-changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
