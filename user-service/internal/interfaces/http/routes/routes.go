@@ -3,10 +3,10 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/jwt"
 	"gorm.io/gorm"
-	"tasius.my.id/SE/user-service/internal/config"
-	"tasius.my.id/SE/user-service/internal/utils"
-	"tasius.my.id/SE/user-service/internal/utils/jwt"
 )
 
 type RoutesDependencies struct {
@@ -16,9 +16,7 @@ type RoutesDependencies struct {
 	JWTManager  *jwt.TokenManager
 }
 
-
-
-func SetupRoutes(app *fiber.App, deps RoutesDependencies)  {
+func SetupRoutes(app *fiber.App, deps RoutesDependencies) {
 	api := app.Group("/api")
 
 	api.Get("/health", func(c *fiber.Ctx) error {

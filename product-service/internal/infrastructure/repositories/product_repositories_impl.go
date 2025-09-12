@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/entities"
 	"gorm.io/gorm"
-	"tasius.my.id/SE/product-service/internal/domain/entities"
 )
 
 type productRepository struct {

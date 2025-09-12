@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.set-matrix.outputs.services }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            user:
+              - 'user-service/**'
+            product:
+              - 'product-service/**'
+            crypto:
+              - 'crypto-service/**'
+
+      - id: set-matrix
+        run: |
+          services=$(jq -c -n \
+            --arg user ${{ steps.changes.outputs.user }} \
+            --arg product ${{ steps.changes.outputs.product }} \
+            --arg crypto ${{ steps.changes.outputs.crypto }} \
+            '{ include: [
+              if $user == "true" then {service:"user"} else empty end,
+              if $product == "true" then {service:"product"} else empty end,
+              if $crypto == "true" then {service:"crypto"} else empty end
+            ] }')
+
+          if [ "$(echo "$services" | jq '.include | length')" -eq 0 ]; then
+            services='{"include":[{"service":"__none__"}]}'
+          fi
+
+          echo "services=$services" >> $GITHUB_OUTPUT
+
+
+  build-test:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect-changes.outputs.services) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Placeholder / no-op
+        if: ${{ matrix.service == '__none__' }}
+        run: echo "No services changed — skipping build/test."
+
+      - name: Set up Go
+        if: ${{ matrix.service != '__none__' }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.6'
+
+      - name: Download dependencies
+        if: ${{ matrix.service != '__none__' }}
+        working-directory: ${{ format('{0}-service', matrix.service) }}
+        run: go mod download
+
+      - name: Install gosec
+        if: ${{ matrix.service != '__none__' }}
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Run gosec
+        if: ${{ matrix.service != '__none__' }}
+        run: gosec ./.../${{ format('{0}-service', matrix.service) }}
+
+      - name: Lint
+        if: ${{ matrix.service != '__none__' }}
+        working-directory: ${{ format('{0}-service', matrix.service) }}
+        run: |
+          go install golang.org/x/lint/golint@latest
+          golint ./... || true
+
+      # - name: Run Tests (enable later)
+      #   if: ${{ matrix.service != '__none__' }}
+      #   working-directory: ${{ format('{0}-service', matrix.service) }}
+      #   run: go test ./... -v
+
+      - name: Build Docker Image
+        if: ${{ matrix.service != '__none__' }}
+        run: |
+          REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "REPO_LC=$REPO_LC" >> $GITHUB_ENV
+          docker build -t ghcr.io/$REPO_LC/service-${{ matrix.service }}:latest \
+            ${{ format('{0}-service', matrix.service) }}
+
+      - name: Push Docker Image
+        if: ${{ matrix.service != '__none__' }}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ env.REPO_LC }}/service-${{ matrix.service }}:latest
+
+
+  security-scan:
+    needs: [detect-changes, build-test]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect-changes.outputs.services) }}
+
+    steps:
+      - name: Placeholder / no-op
+        if: ${{ matrix.service == '__none__' }}
+        run: echo "No services changed — skipping scan."
+
+      - name: Scan Docker Image with Trivy
+        if: ${{ matrix.service != '__none__' }}
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ github.repository_owner }}/scalable-ecommerce/service-${{ matrix.service }}:latest
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: true

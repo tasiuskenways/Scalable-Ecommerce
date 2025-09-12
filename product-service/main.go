@@ -9,10 +9,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/infrastructure/db"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/interfaces/http/routes"
 	"gorm.io/gorm"
-	"tasius.my.id/SE/product-service/internal/config"
-	"tasius.my.id/SE/product-service/internal/infrastructure/db"
-	"tasius.my.id/SE/product-service/internal/interfaces/http/routes"
 )
 
 func main() {

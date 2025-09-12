@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"tasius.my.id/SE/user-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/config"
 )
 
 func NewRedisConnection(cfg *config.Config) (*redis.Client, error) {

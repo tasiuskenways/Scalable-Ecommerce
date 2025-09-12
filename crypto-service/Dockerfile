@@ -22,8 +22,6 @@ WORKDIR /app
 
 # Copy the binary from builder
 COPY --from=builder /app/crypto-service .
-# Copy the keys directory
-COPY --from=builder /app/keys ./keys
 
 # Expose the port the app runs on
 EXPOSE 3002

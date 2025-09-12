@@ -2,9 +2,9 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"tasius.my.id/SE/product-service/internal/application/services"
-	"tasius.my.id/SE/product-service/internal/infrastructure/repositories"
-	"tasius.my.id/SE/product-service/internal/interfaces/http/handlers"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/application/services"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/infrastructure/repositories"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/interfaces/http/handlers"
 )
 
 func SetupProductRoutes(api fiber.Router, deps RoutesDependencies) {

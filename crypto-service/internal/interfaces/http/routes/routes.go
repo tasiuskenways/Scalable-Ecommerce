@@ -2,12 +2,12 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"tasius.my.id/SE/crypto-service/internal/config"
-	"tasius.my.id/SE/crypto-service/internal/interfaces/http/handlers"
-	"tasius.my.id/SE/crypto-service/internal/utils"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/interfaces/http/handlers"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/utils"
 )
 
-func SetupRoutes(app *fiber.App, cfg *config.Config)  {
+func SetupRoutes(app *fiber.App, cfg *config.Config) {
 	api := app.Group("/api")
 
 	api.Get("/health", func(c *fiber.Ctx) error {

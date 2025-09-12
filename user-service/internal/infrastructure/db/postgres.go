@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"tasius.my.id/SE/user-service/internal/config"
 )
 
 // NewPostgresConnection creates a new database connection and runs migrations

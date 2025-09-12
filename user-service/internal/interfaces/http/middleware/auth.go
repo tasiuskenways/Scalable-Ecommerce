@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"tasius.my.id/SE/user-service/internal/utils/jwt"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/jwt"
 )
 
 const (
 	AuthorizationHeader = "Authorization"
-	BearerSchema      = "Bearer"
+	BearerSchema        = "Bearer"
 )
 
 func AuthMiddleware(jwtManager *jwt.TokenManager) fiber.Handler {

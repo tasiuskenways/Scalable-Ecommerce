@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"tasius.my.id/SE/crypto-service/internal/utils"
-	"tasius.my.id/SE/crypto-service/internal/utils/crypto"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/utils"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/utils/crypto"
 )
 
 // RequestBody represents the expected request body format with encrypted data

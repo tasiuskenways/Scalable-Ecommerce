@@ -3,9 +3,9 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/utils"
 	"gorm.io/gorm"
-	"tasius.my.id/SE/product-service/internal/config"
-	"tasius.my.id/SE/product-service/internal/utils"
 )
 
 type RoutesDependencies struct {

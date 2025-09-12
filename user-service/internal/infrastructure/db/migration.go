@@ -3,8 +3,8 @@ package db
 import (
 	"fmt"
 
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/entities"
 	"gorm.io/gorm"
-	"tasius.my.id/SE/user-service/internal/domain/entities"
 )
 
 func Migrate(db *gorm.DB, resetDb bool) error {
