@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,9 +25,6 @@ func main() {
 
 	var postgres *gorm.DB
 	var err error
-
-	fmt.Println("runMigration:", *runMigration)
-	fmt.Println("resetDb:", *resetDb)
 
 	if *runMigration {
 		// Connect to database with running migrations
