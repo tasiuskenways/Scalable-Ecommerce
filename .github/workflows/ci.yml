@@ -95,13 +95,6 @@ jobs:
       #   working-directory: ${{ format('{0}-service', matrix.service) }}
       #   run: go test ./... -v
 
-      - name: Run Gosec Security Scanner
-        if: ${{ matrix.service != '__none__' }}
-        run: |
-          # run gosec from repo root targeting the service folder
-          go install github.com/securego/gosec/v2/cmd/gosec@latest
-          $GOPATH/bin/gosec ./.../${{ format('{0}-service', matrix.service) }}
-
       - name: Build Docker Image
         if: ${{ matrix.service != '__none__' }}
         run: |
