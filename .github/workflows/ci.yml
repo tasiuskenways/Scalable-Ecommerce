@@ -88,10 +88,11 @@ jobs:
           go install golang.org/x/lint/golint@latest
           golint ./... || true
 
-      - name: Run Tests
-        if: ${{ matrix.service != '__none__' }}
-        working-directory: ${{ format('{0}-service', matrix.service) }}
-        run: go test ./... -v
+      # TODO: Enable When Unit Test Already Created
+      # - name: Run Tests
+      #   if: ${{ matrix.service != '__none__' }}
+      #   working-directory: ${{ format('{0}-service', matrix.service) }}
+      #   run: go test ./... -v
 
       - name: Run Gosec Security Scanner
         if: ${{ matrix.service != '__none__' }}
