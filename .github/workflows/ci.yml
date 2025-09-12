@@ -1,4 +1,4 @@
-name: kata Fakhry Metal Metal
+name: CI
 
 on:
   push:
