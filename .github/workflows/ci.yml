@@ -45,6 +45,9 @@ jobs:
   build-test:
     needs: detect-changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.detect-changes.outputs.services) }}
