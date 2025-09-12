@@ -23,4 +23,8 @@ services:
       - name: product-route
         paths:
           - /api/product
+          - /api/categories
         strip_path: false
+        plugins:
+          - name: user-auth-token-handler
+          
