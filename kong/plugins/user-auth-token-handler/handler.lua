@@ -1,5 +1,4 @@
 local jwt = require "resty.jwt"
-local cjson = require "cjson.safe"
 local redis = require "resty.redis"
 
 local JwtBlacklistHandler = {
@@ -40,7 +39,7 @@ function JwtBlacklistHandler:access(conf)
 
   -- check blacklist (using jti or raw token)
   local jti = jwt_obj.payload.jti or token
-  local res, err = red:get("blacklist:" .. jti)
+  local res, _ = red:get("blacklist:" .. jti)
 
   if res and res ~= ngx.null then
     return kong.response.exit(401, { message = "Token revoked" })

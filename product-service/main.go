@@ -20,6 +20,7 @@ func main() {
 	cfg := config.Load()
 
 	runMigration := flag.Bool("migrate", false, "Run migration")
+	resetDb := flag.Bool("resetDb", false, "Reset DB")
 	flag.Parse()
 
 	var postgres *gorm.DB
@@ -27,16 +28,14 @@ func main() {
 
 	if *runMigration {
 		// Connect to database with running migrations
-		postgres, err = db.NewPostgresConnection(cfg)
-		if err != nil {
-			log.Fatal("Failed to connect to database:", err)
-		}
-	} else {
-		// Connect to database without running migrations
-		postgres, err = db.ConnectWithoutMigration(cfg)
-		if err != nil {
-			log.Fatal("Failed to connect to database:", err)
-		}
+		db.NewPostgresConnection(cfg, *resetDb)
+		return
+	}
+
+	// Connect to database without running migrations
+	postgres, err = db.ConnectWithoutMigration(cfg)
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
 	}
 
 	redis, err := db.NewRedisConnection(cfg)
