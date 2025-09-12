@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/domain/entities"
-	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/domain/repositories"
-	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/domain/services"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/entities"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/repositories"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/services"
 )
 
 type productService struct {

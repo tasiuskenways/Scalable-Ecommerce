@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/utils"
-	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/utils/crypto"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/utils"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/utils/crypto"
 )
 
 func EncryptHandler(publicKeyPath string) fiber.Handler {

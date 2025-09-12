@@ -8,8 +8,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/redis/go-redis/v9"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/config"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/entities"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/entities"
 )
 
 const (

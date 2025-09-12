@@ -2,9 +2,9 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/config"
-	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/interfaces/http/handlers"
-	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/utils"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/interfaces/http/handlers"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/utils"
 )
 
 func SetupRoutes(app *fiber.App, cfg *config.Config) {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/domain/entities"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/entities"
 	"gorm.io/gorm"
 )
 

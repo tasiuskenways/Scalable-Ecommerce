@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/utils/jwt"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/jwt"
 )
 
 const (

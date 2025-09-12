@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/application/dto"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/services"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/interfaces/validator"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/utils"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/application/dto"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/services"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/validator"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils"
 )
 
 type AuthHandler struct {

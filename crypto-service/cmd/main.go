@@ -8,7 +8,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/utils/crypto"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/utils/crypto"
 )
 
 func main() {

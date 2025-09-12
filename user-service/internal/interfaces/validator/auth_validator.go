@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/application/dto"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/application/dto"
 )
 
 type AuthValidator struct {

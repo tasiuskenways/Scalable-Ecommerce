@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/entities"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/entities"
 )
 
 type UserResponse struct {

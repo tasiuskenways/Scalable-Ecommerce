@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/application/dto"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/application/dto"
 )
 
 type AuthService interface {

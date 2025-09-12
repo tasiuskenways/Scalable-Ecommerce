@@ -1,4 +1,4 @@
-module github.com/tasiuskenways/Scalable-Ecommerce/crypto-service
+module github.com/tasiuskenways/scalable-ecommerce/crypto-service
 
 go 1.24.6
 

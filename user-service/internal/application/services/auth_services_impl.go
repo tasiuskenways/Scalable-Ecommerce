@@ -7,14 +7,14 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/application/dto"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/config"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/entities"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/repositories"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/services"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/interfaces/http/middleware"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/utils/jwt"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/utils/password"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/application/dto"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/entities"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/repositories"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/services"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/middleware"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/jwt"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/password"
 )
 
 type authService struct {

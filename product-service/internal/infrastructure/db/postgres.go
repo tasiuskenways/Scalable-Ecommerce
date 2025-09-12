@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

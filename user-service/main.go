@@ -9,10 +9,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/config"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/infrastructure/db"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/interfaces/http/routes"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/utils/jwt"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/infrastructure/db"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/routes"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/jwt"
 	"gorm.io/gorm"
 )
 

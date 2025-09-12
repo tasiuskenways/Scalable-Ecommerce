@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/entities"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/entities"
 	"gorm.io/gorm"
 )
 

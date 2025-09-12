@@ -2,10 +2,10 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/application/services"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/infrastructure/repositories"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/interfaces/http/handlers"
-	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/interfaces/http/middleware"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/application/services"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/infrastructure/repositories"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/handlers"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/middleware"
 )
 
 func SetupAuthRoutes(api fiber.Router, deps RoutesDependencies) {

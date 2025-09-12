@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/domain/entities"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/entities"
 )
 
 type ProductRepository interface {
