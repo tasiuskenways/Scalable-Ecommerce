@@ -37,20 +37,6 @@ services:
       - internal-net
 
   # -------------------------
-  # User Service
-  # -------------------------
-  user-service:
-    build: ./user-service
-    env_file: ./user-service/.env.user
-    networks:
-      - internal-net
-    expose:
-      - 3003
-    depends_on:
-      - user-db
-      - user-redis
-
-  # -------------------------
   # Product Service
   # -------------------------
   product-service:
@@ -99,16 +85,18 @@ services:
       - 6379
 
   # -------------------------
-  # User Migrate
+  # User Service
   # -------------------------
-  user-migrate:
+  user-service:
     build: ./user-service
-    command: ["./user-service", "-migrate", "true"]
     env_file: ./user-service/.env.user
-    depends_on:
-      - user-db
     networks:
       - internal-net
+    expose:
+      - 3003
+    depends_on:
+      - user-db
+      - user-redis
 
   user-db:
     image: postgres:16-alpine
