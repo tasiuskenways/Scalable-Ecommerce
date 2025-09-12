@@ -1,0 +1,58 @@
+name: CI Monorepo
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.set-matrix.outputs.services }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            user:
+              - 'user-service/**'
+            product:
+              - 'product-service/**'
+            crypto:
+              - 'crypto-service/**'
+      - id: set-matrix
+        run: |
+          services=$(jq -c -n \
+            --argjson user ${{ steps.changes.outputs.user }} \
+            --argjson product ${{ steps.changes.outputs.product }} \
+            --argjson crypto ${{ steps.changes.outputs.crypto }} \
+            '{ include: [
+              if $user == "true" then {service:"user"} else empty end,
+              if $product == "true" then {service:"product"} else empty end,
+              if $crypto == "true" then {service:"crypto"} else empty end,
+            ] }')
+          echo "services=$services" >> $GITHUB_OUTPUT
+
+  build-test:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.services) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Run Tests
+        working-directory: service-${{ matrix.service }}
+        run: go test ./...
+      - name: Build Docker Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/service-${{ matrix.service }}:latest service-${{ matrix.service }}
+      - name: Push Docker Image
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.repository }}/service-${{ matrix.service }}:latest
