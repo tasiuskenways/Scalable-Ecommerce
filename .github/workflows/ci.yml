@@ -26,21 +26,21 @@ jobs:
       - id: set-matrix
         run: |
           services=$(jq -c -n \
-            --argjson user ${{ steps.changes.outputs.user }} \
-            --argjson product ${{ steps.changes.outputs.product }} \
-            --argjson crypto ${{ steps.changes.outputs.crypto }} \
+            --arg user ${{ steps.changes.outputs.user }} \
+            --arg product ${{ steps.changes.outputs.product }} \
+            --arg crypto ${{ steps.changes.outputs.crypto }} \
             '{ include: [
               if $user == "true" then {service:"user"} else empty end,
               if $product == "true" then {service:"product"} else empty end,
               if $crypto == "true" then {service:"crypto"} else empty end
             ] }')
 
-          # if no services were included, inject a placeholder so matrix isn't empty
           if [ "$(echo "$services" | jq '.include | length')" -eq 0 ]; then
             services='{"include":[{"service":"__none__"}]}'
           fi
 
           echo "services=$services" >> $GITHUB_OUTPUT
+
 
   build-test:
     needs: detect-changes
