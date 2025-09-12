@@ -31,9 +31,10 @@ jobs:
             '{ include: [
               if $user == "true" then {service:"user"} else empty end,
               if $product == "true" then {service:"product"} else empty end,
-              if $crypto == "true" then {service:"crypto"} else empty end,
+              if $crypto == "true" then {service:"crypto"} else empty end
             ] }')
           echo "services=$services" >> $GITHUB_OUTPUT
+
 
   build-test:
     needs: detect-changes
