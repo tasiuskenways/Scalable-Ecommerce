@@ -8,9 +8,9 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"tasius.my.id/SE/crypto-service/internal/config"
-	"tasius.my.id/SE/crypto-service/internal/interfaces/http/routes"
-	"tasius.my.id/SE/crypto-service/internal/utils/crypto"
+	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/config"
+	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/interfaces/http/routes"
+	"github.com/tasiuskenways/Scalable-Ecommerce/crypto-service/internal/utils/crypto"
 )
 
 func main() {

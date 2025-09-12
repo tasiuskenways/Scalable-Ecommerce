@@ -7,14 +7,14 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
-	"tasius.my.id/SE/user-service/internal/application/dto"
-	"tasius.my.id/SE/user-service/internal/config"
-	"tasius.my.id/SE/user-service/internal/domain/entities"
-	"tasius.my.id/SE/user-service/internal/domain/repositories"
-	"tasius.my.id/SE/user-service/internal/domain/services"
-	"tasius.my.id/SE/user-service/internal/interfaces/http/middleware"
-	"tasius.my.id/SE/user-service/internal/utils/jwt"
-	"tasius.my.id/SE/user-service/internal/utils/password"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/application/dto"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/config"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/entities"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/repositories"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/services"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/interfaces/http/middleware"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/utils/jwt"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/utils/password"
 )
 
 type authService struct {
@@ -140,7 +140,7 @@ func (s *authService) generateAuthResponse(user *entities.User) (*dto.AuthRespon
 	}
 
 	return &dto.AuthResponse{
-		User:         dto.NewUserResponse(user),	
+		User:         dto.NewUserResponse(user),
 		AccessToken:  tokens[jwt.AccessToken],
 		RefreshToken: tokens[jwt.RefreshToken],
 		TokenType:    "Bearer",

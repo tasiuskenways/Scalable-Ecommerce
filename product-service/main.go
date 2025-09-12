@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,10 +9,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/config"
+	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/infrastructure/db"
+	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/interfaces/http/routes"
 	"gorm.io/gorm"
-	"tasius.my.id/SE/product-service/internal/config"
-	"tasius.my.id/SE/product-service/internal/infrastructure/db"
-	"tasius.my.id/SE/product-service/internal/interfaces/http/routes"
 )
 
 func main() {
@@ -26,9 +25,6 @@ func main() {
 
 	var postgres *gorm.DB
 	var err error
-
-	fmt.Println("runMigration:", *runMigration)
-	fmt.Println("resetDb:", *resetDb)
 
 	if *runMigration {
 		// Connect to database with running migrations

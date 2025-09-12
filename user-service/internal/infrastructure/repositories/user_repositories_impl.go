@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/entities"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/repositories"
 	"gorm.io/gorm"
-	"tasius.my.id/SE/user-service/internal/domain/entities"
-	"tasius.my.id/SE/user-service/internal/domain/repositories"
 )
 
 type userRepository struct {

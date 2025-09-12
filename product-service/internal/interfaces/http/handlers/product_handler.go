@@ -4,10 +4,10 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"tasius.my.id/SE/product-service/internal/application/dto"
-	"tasius.my.id/SE/product-service/internal/domain/entities"
-	"tasius.my.id/SE/product-service/internal/domain/services"
-	"tasius.my.id/SE/product-service/internal/utils"
+	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/application/dto"
+	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/domain/entities"
+	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/domain/services"
+	"github.com/tasiuskenways/Scalable-Ecommerce/product-service/internal/utils"
 )
 
 type ProductHandler struct {

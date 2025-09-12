@@ -8,15 +8,15 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/redis/go-redis/v9"
-	"tasius.my.id/SE/user-service/internal/config"
-	"tasius.my.id/SE/user-service/internal/domain/entities"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/config"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/entities"
 )
 
 const (
 	// Redis key prefixes
 	refreshTokenPrefix = "refresh:%d"
-	accessTokenPrefix = "access:%d"
-	blacklistPrefix   = "blacklist:%s"
+	accessTokenPrefix  = "access:%d"
+	blacklistPrefix    = "blacklist:%s"
 )
 
 type TokenType string
@@ -27,9 +27,9 @@ const (
 )
 
 type TokenManager struct {
-	secretKey  []byte
-	config     *config.JWTConfig
-	redis      *redis.Client
+	secretKey []byte
+	config    *config.JWTConfig
+	redis     *redis.Client
 }
 
 type Claims struct {
@@ -187,19 +187,19 @@ func (tm *TokenManager) ValidateToken(tokenString string, tokenType TokenType) (
 // Logout invalidates all tokens for a user
 func (tm *TokenManager) Logout(userID string) error {
 	ctx := context.Background()
-	
+
 	// Get the refresh token before deleting it
-	refreshToken, err := tm.redis.Get(ctx, refreshTokenPrefix + userID).Result()
+	refreshToken, err := tm.redis.Get(ctx, refreshTokenPrefix+userID).Result()
 	if err == nil {
 		// Add refresh token to blacklist
-		tm.redis.Set(ctx, blacklistPrefix + refreshToken, "1", tm.config.RefreshExpiration)
+		tm.redis.Set(ctx, blacklistPrefix+refreshToken, "1", tm.config.RefreshExpiration)
 	}
 
 	// Delete all tokens for this user
 	_, err = tm.redis.Del(
 		ctx,
-		refreshTokenPrefix + userID,
-		accessTokenPrefix + userID,
+		refreshTokenPrefix+userID,
+		accessTokenPrefix+userID,
 	).Result()
 
 	return err
@@ -210,7 +210,7 @@ func (tm *TokenManager) InvalidateToken(tokenString string, tokenType TokenType,
 	// Add token to blacklist
 	return tm.redis.Set(
 		context.Background(),
-		blacklistPrefix + tokenString,
+		blacklistPrefix+tokenString,
 		"1",
 		expiration,
 	).Err()

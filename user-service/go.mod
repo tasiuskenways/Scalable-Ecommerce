@@ -1,4 +1,4 @@
-module tasius.my.id/SE/user-service
+module github.com/tasiuskenways/Scalable-Ecommerce/user-service
 
 go 1.24.6
 

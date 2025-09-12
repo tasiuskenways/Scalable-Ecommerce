@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	"tasius.my.id/SE/user-service/internal/domain/entities"
+	"github.com/tasiuskenways/Scalable-Ecommerce/user-service/internal/domain/entities"
 )
 
 type UserRepository interface {
