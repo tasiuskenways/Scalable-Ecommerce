@@ -23,5 +23,9 @@ func SetupRoutes(app *fiber.App, deps RoutesDependencies) {
 		return utils.SuccessResponse(c, "OK", nil)
 	})
 
+	// Setup all routes
 	SetupAuthRoutes(api, deps)
+	SetupUserRoutes(api, deps)
+	SetupProfileRoutes(api, deps)
+	SetupRoleRoutes(api, deps)
 }

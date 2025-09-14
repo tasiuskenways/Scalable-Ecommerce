@@ -12,7 +12,6 @@ import (
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/entities"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/repositories"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/services"
-	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/middleware"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/jwt"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/password"
 )
@@ -118,13 +117,13 @@ func (s *authService) ValidateToken(ctx *fiber.Ctx, token string) (*dto.UserResp
 }
 
 func (s *authService) Logout(ctx *fiber.Ctx) error {
-	userID, err := middleware.GetUserIDFromContext(ctx)
-	if err != nil {
-		return err
+	userID := ctx.Get("X-User-Id")
+	if userID == "" {
+		return errors.New("user not authenticated")
 	}
 
 	// Invalidate all tokens for this user
-	err = s.jwtManager.Logout(userID)
+	err := s.jwtManager.Logout(userID)
 	if err != nil {
 		return err
 	}

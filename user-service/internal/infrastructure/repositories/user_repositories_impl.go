@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/entities"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/repositories"
@@ -20,15 +21,35 @@ func NewUserRepository(db *gorm.DB) repositories.UserRepository {
 }
 
 func (r *userRepository) Create(ctx context.Context, user *entities.User) error {
-	if err := r.db.WithContext(ctx).Create(user).Error; err != nil {
-		return err
-	}
-	return nil
+	// Start transaction
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// Create user
+		if err := tx.Create(user).Error; err != nil {
+			return err
+		}
+
+		// Assign default "customer" role if no roles specified
+		if len(user.Roles) == 0 {
+			var defaultRole entities.Role
+			if err := tx.Where("name = ?", "customer").First(&defaultRole).Error; err != nil {
+				return fmt.Errorf("failed to get default role: %w", err)
+			}
+
+			if err := tx.Model(user).Association("Roles").Append(&defaultRole); err != nil {
+				return fmt.Errorf("failed to assign default role: %w", err)
+			}
+		}
+
+		return nil
+	})
 }
 
 func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entities.User, error) {
 	var user entities.User
-	if err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
+	if err := r.db.WithContext(ctx).
+		Preload("Roles.Permissions").
+		Preload("Profile").
+		Where("email = ?", email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -39,7 +60,10 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*entitie
 
 func (r *userRepository) GetByID(ctx context.Context, id string) (*entities.User, error) {
 	var user entities.User
-	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&user).Error; err != nil {
+	if err := r.db.WithContext(ctx).
+		Preload("Roles.Permissions").
+		Preload("Profile").
+		Where("id = ?", id).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

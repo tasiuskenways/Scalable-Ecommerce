@@ -16,6 +16,8 @@ services:
         paths:
           - /api/auth/refresh
           - /api/auth/logout
+          - /api/roles
+          - /api/profile
 
   - name: product-service
     url: http://product-service:3004

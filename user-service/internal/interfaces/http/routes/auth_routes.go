@@ -5,7 +5,6 @@ import (
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/application/services"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/infrastructure/repositories"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/handlers"
-	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/middleware"
 )
 
 func SetupAuthRoutes(api fiber.Router, deps RoutesDependencies) {
@@ -18,7 +17,5 @@ func SetupAuthRoutes(api fiber.Router, deps RoutesDependencies) {
 	auth.Post("/register", authHandler.Register)
 	auth.Post("/login", authHandler.Login)
 	auth.Post("/refresh", authHandler.RefreshToken)
-
-	authProtected := api.Group("/auth", middleware.AuthMiddleware(deps.JWTManager))
-	authProtected.Post("/logout", authHandler.Logout)
+	auth.Post("/logout", authHandler.Logout)
 }
