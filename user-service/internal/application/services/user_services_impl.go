@@ -17,6 +17,9 @@ type userService struct {
 	db       *gorm.DB
 }
 
+// NewUserService creates and returns a services.UserService backed by the provided
+// UserRepository and GORM DB instance. The returned service uses the repository for
+// data access and the DB for queries that require gorm operations.
 func NewUserService(userRepo repositories.UserRepository, db *gorm.DB) services.UserService {
 	return &userService{
 		userRepo: userRepo,

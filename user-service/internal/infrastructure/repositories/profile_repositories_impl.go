@@ -13,6 +13,7 @@ type profileRepository struct {
 	db *gorm.DB
 }
 
+// NewProfileRepository returns a repositories.ProfileRepository backed by GORM using the provided *gorm.DB.
 func NewProfileRepository(db *gorm.DB) repositories.ProfileRepository {
 	return &profileRepository{db: db}
 }

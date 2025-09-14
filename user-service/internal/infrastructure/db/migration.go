@@ -7,6 +7,15 @@ import (
 	"gorm.io/gorm"
 )
 
+// Migrate initializes the database schema and seeds default roles and permissions.
+// It ensures the PostgreSQL `uuid-ossp` extension exists, runs auto-migrations for
+// User, UserProfile, Role, and Permission, and seeds default permissions and roles.
+//
+// If resetDb is true, existing tables (UserProfile, User, Role, Permission) are
+// dropped before running migrations.
+//
+// Returns an error if enabling the UUID extension, dropping tables, migrating, or
+// seeding fails.
 func Migrate(db *gorm.DB, resetDb bool) error {
 	// Enable UUID extension
 	err := db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
@@ -46,6 +55,12 @@ func Migrate(db *gorm.DB, resetDb bool) error {
 	return nil
 }
 
+// seedDefaultRolesAndPermissions seeds a set of default permissions and roles into the database.
+// 
+// It ensures a predefined list of permissions exists (creating any that are missing) and then
+// creates default roles (super_admin, admin, moderator, customer, guest) with the appropriate
+// permissions and a default description. The operation is idempotent: existing permissions or
+// roles are left unchanged. Returns a non-nil error if any database lookups or creations fail.
 func seedDefaultRolesAndPermissions(db *gorm.DB) error {
 	// Define default permissions
 	permissions := []entities.Permission{
@@ -158,6 +173,9 @@ func seedDefaultRolesAndPermissions(db *gorm.DB) error {
 	return nil
 }
 
+// getDefaultRoleDescription returns a human-readable description for common role names
+// ("super_admin", "admin", "moderator", "customer", "guest"). If the provided roleName
+// is not recognized, it returns "Default role".
 func getDefaultRoleDescription(roleName string) string {
 	descriptions := map[string]string{
 		"super_admin": "Super administrator with full system access",

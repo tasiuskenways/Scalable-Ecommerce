@@ -11,6 +11,8 @@ type RoleHandler struct {
 	roleService services.RoleService
 }
 
+// NewRoleHandler creates a RoleHandler wired with the provided RoleService.
+// The returned handler exposes HTTP endpoints for role-related operations backed by the service.
 func NewRoleHandler(roleService services.RoleService) *RoleHandler {
 	return &RoleHandler{
 		roleService: roleService,

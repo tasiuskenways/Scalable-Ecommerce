@@ -11,6 +11,7 @@ type ProfileHandler struct {
 	profileService services.ProfileService
 }
 
+// NewProfileHandler creates and returns a ProfileHandler wired with the provided ProfileService.
 func NewProfileHandler(profileService services.ProfileService) *ProfileHandler {
 	return &ProfileHandler{
 		profileService: profileService,

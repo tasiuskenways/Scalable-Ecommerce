@@ -18,6 +18,8 @@ type roleService struct {
 	db             *gorm.DB
 }
 
+// NewRoleService creates and returns a services.RoleService backed by the provided
+// role, permission and user repositories and the given GORM database connection.
 func NewRoleService(
 	roleRepo repositories.RoleRepository,
 	permissionRepo repositories.PermissionRepository,

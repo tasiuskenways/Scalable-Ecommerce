@@ -13,6 +13,8 @@ type permissionRepository struct {
 	db *gorm.DB
 }
 
+// NewPermissionRepository returns a repositories.PermissionRepository implementation backed by
+// the provided GORM database connection.
 func NewPermissionRepository(db *gorm.DB) repositories.PermissionRepository {
 	return &permissionRepository{db: db}
 }

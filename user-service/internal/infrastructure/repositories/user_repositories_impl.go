@@ -14,6 +14,8 @@ type userRepository struct {
 	db *gorm.DB
 }
 
+// NewUserRepository creates and returns a repositories.UserRepository backed by the provided *gorm.DB.
+// The returned repository uses the given DB connection for all user-related persistence operations.
 func NewUserRepository(db *gorm.DB) repositories.UserRepository {
 	return &userRepository{
 		db: db,
