@@ -5,9 +5,18 @@ import (
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/application/services"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/infrastructure/repositories"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/handlers"
-	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/middleware"
 )
 
+// SetupAuthRoutes registers authentication endpoints on the provided Fiber router.
+// It wires repositories, services, and handlers from the given dependencies and mounts
+// the following public routes under the "/auth" group:
+//   POST /auth/register  -> authHandler.Register
+//   POST /auth/login     -> authHandler.Login
+//   POST /auth/refresh   -> authHandler.RefreshToken
+//   POST /auth/logout    -> authHandler.Logout
+// The function performs setup only and does not return an error; route handlers handle
+// request-level errors. The provided dependencies are used to construct the repository,
+// service, and handler instances.
 func SetupAuthRoutes(api fiber.Router, deps RoutesDependencies) {
 
 	userRepo := repositories.NewUserRepository(deps.Db)
@@ -18,7 +27,5 @@ func SetupAuthRoutes(api fiber.Router, deps RoutesDependencies) {
 	auth.Post("/register", authHandler.Register)
 	auth.Post("/login", authHandler.Login)
 	auth.Post("/refresh", authHandler.RefreshToken)
-
-	authProtected := api.Group("/auth", middleware.AuthMiddleware(deps.JWTManager))
-	authProtected.Post("/logout", authHandler.Logout)
+	auth.Post("/logout", authHandler.Logout)
 }

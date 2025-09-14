@@ -16,6 +16,9 @@ type RoutesDependencies struct {
 	JWTManager  *jwt.TokenManager
 }
 
+// SetupRoutes registers the application's HTTP API routes on the provided Fiber app.
+// It creates the "/api" group, adds a GET /api/health endpoint that returns "OK", and
+// delegates registration of auth, user, profile, and role routes to the respective setup helpers.
 func SetupRoutes(app *fiber.App, deps RoutesDependencies) {
 	api := app.Group("/api")
 
@@ -23,5 +26,10 @@ func SetupRoutes(app *fiber.App, deps RoutesDependencies) {
 		return utils.SuccessResponse(c, "OK", nil)
 	})
 
+	// Setup all routes
 	SetupAuthRoutes(api, deps)
+	SetupUserRoutes(api, deps)
+	SetupProfileRoutes(api, deps)
+	SetupRoleRoutes(api, deps)
+	SetupInternalRoutes(api, deps)
 }

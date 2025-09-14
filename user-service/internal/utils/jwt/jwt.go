@@ -103,7 +103,7 @@ func (tm *TokenManager) generateToken(user *entities.User, tokenType TokenType, 
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
-			Issuer:    "todolistapi",
+			Issuer:    "user-service",
 			Subject:   string(tokenType),
 		},
 	}

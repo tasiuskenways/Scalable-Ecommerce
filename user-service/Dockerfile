@@ -24,7 +24,7 @@ WORKDIR /app
 COPY --from=builder /app/user-service .
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 3003
 
 # Command to run the application
 CMD ["./user-service"]

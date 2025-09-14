@@ -1,30 +1,127 @@
+# kong/kong.yml (updated)
 _format_version: "3.0"
 services:
   - name: user-service
     url: http://user-service:3003
     routes:
-      - name: user-route
+      # Auth routes (public)
+      - name: user-auth-routes
         paths:
           - /api/auth/register
           - /api/auth/login
+          - /api/auth/refresh
         strip_path: false
         plugins:
-          - name: crypto-decrypt   # decrypt only for this route
+          - name: crypto-decrypt   # decrypt only for register/login
 
-      - name: user-route-no-decrypt
+      # Auth logout (authenticated only)
+      - name: user-auth-logout
         strip_path: false
         paths:
-          - /api/auth/refresh
           - /api/auth/logout
+        plugins:
+          - name: user-auth-token-handler
+          # Basic auth only, no RBAC needed
+
+      # User profile routes (user can access own, admin can access all)
+      - name: user-profile-own
+        strip_path: false
+        paths:
+          - /api/profiles/me
+          - /api/users/me
+        plugins:
+          - name: user-auth-token-handler
+          # Just authentication, users can access their own data
+
+      # Admin profile management
+      - name: user-profile-admin
+        strip_path: false
+        paths:
+          - /api/profiles/users
+          - /api/users/[0-9a-f-]+$  # UUID pattern
+        plugins:
+          - name: user-auth-token-handler
+            config:
+              required_roles: ["admin", "super_admin"]
+              owner_param: "userId"  # Allow owner access too
+
+      # Role management (admin only)
+      - name: user-role-management
+        strip_path: false
+        paths:
+          - /api/roles
+        plugins:
+          - name: user-auth-token-handler
+            config:
+              required_roles: ["admin", "super_admin"]
+
+      # User own roles (authenticated users)
+      - name: user-own-roles
+        strip_path: false
+        paths:
+          - /api/user/roles
+        plugins:
+          - name: user-auth-token-handler
+          # Just authentication needed
+
+      # Internal routes (for Kong only)
+      - name: user-internal-routes
+        strip_path: false
+        paths:
+          - /api/internal
+        plugins:
+          - name: user-auth-token-handler
+            config:
+              allow_public: true  # Internal service auth handled in application
 
   - name: product-service
     url: http://product-service:3004
     routes:
-      - name: product-route
+      # Public product browsing
+      - name: product-public
         paths:
-          - /api/product
-          - /api/categories
+          - /api/product$
+          - /api/categories$
         strip_path: false
         plugins:
           - name: user-auth-token-handler
-          
+            config:
+              allow_public: true
+
+      # Product management (admin/moderator only)
+      - name: product-management
+        paths:
+          - /api/product/manage
+          - /api/categories/manage
+        strip_path: false
+        plugins:
+          - name: user-auth-token-handler
+            config:
+              required_permissions: ["product:create", "product:update", "product:delete"]
+
+      # User's own orders
+      - name: user-orders
+        paths:
+          - /api/orders/me
+        strip_path: false
+        plugins:
+          - name: user-auth-token-handler
+            config:
+              required_permissions: ["order:read", "order:create"]
+
+      # Order management (admin only)
+      - name: order-management
+        paths:
+          - /api/orders/manage
+        strip_path: false
+        plugins:
+          - name: user-auth-token-handler
+            config:
+              required_roles: ["admin", "super_admin"]
+
+# Example usage for different access patterns:
+# 1. Public access: allow_public: true
+# 2. Admin only: required_roles: ["admin", "super_admin"]
+# 3. Permission-based: required_permissions: ["product:create", "user:update"]
+# 4. Owner or admin: required_roles: ["admin"] + owner_param: "userId"
+# 5. Multiple roles: required_roles: ["admin", "moderator", "customer"]
