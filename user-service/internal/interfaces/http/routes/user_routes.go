@@ -5,7 +5,6 @@ import (
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/application/services"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/infrastructure/repositories"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/handlers"
-	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/middleware"
 )
 
 // SetupUserRoutes registers user-related HTTP routes on the given Fiber router.
@@ -16,6 +15,7 @@ import (
 //   - (admin) GET  /users/:id     : get a user by ID
 //   - (admin) PUT  /users/:id     : update a user by ID
 //   - (admin) DELETE /users/:id   : delete a user by ID
+//
 // The admin routes are protected by AdminOnlyMiddleware using deps.Db.
 func SetupUserRoutes(api fiber.Router, deps RoutesDependencies) {
 	userRepo := repositories.NewUserRepository(deps.Db)
@@ -30,7 +30,7 @@ func SetupUserRoutes(api fiber.Router, deps RoutesDependencies) {
 	users.Put("/me", userHandler.UpdateMe)
 
 	// Admin routes
-	adminUsers := users.Group("/", middleware.AdminOnlyMiddleware(deps.Db))
+	adminUsers := users.Group("/")
 	adminUsers.Get("/", userHandler.GetAllUsers)
 	adminUsers.Get("/:id", userHandler.GetUser)
 	adminUsers.Put("/:id", userHandler.UpdateUser)

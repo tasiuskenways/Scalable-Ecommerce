@@ -118,3 +118,28 @@ func (s *userService) DeleteUser(ctx *fiber.Ctx, id string) error {
 
 	return s.userRepo.Delete(ctx.Context(), id)
 }
+
+func (s *userService) GetUserRBACInfo(ctx *fiber.Ctx, id string) (*dto.UserRBACResponse, error) {
+	user, err := s.userRepo.GetByID(ctx.Context(), id)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, errors.New("user not found")
+	}
+
+	// Extract role names
+	roles := make([]string, len(user.Roles))
+	for i, role := range user.Roles {
+		roles[i] = role.Name
+	}
+
+	// Get all permissions
+	permissions := user.GetPermissions()
+
+	return &dto.UserRBACResponse{
+		UserID:      user.ID,
+		Roles:       roles,
+		Permissions: permissions,
+	}, nil
+}

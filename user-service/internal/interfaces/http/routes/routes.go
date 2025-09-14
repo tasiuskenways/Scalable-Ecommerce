@@ -31,4 +31,5 @@ func SetupRoutes(app *fiber.App, deps RoutesDependencies) {
 	SetupUserRoutes(api, deps)
 	SetupProfileRoutes(api, deps)
 	SetupRoleRoutes(api, deps)
+	SetupInternalRoutes(api, deps)
 }
