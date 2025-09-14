@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,9 +37,6 @@ func (s *authService) Login(ctx *fiber.Ctx, req *dto.LoginRequest) (*dto.AuthRes
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println("password", req.Password)
-	log.Println("user password", user.Password)
 
 	if err := password.CheckPassword(req.Password, user.Password); err != nil {
 		return nil, errors.New("invalid password")
