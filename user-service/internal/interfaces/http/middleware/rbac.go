@@ -6,7 +6,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// RoleMiddleware checks if user has required roles
+// RoleMiddleware returns a Fiber handler that enforces role-based access.
+// RoleMiddleware checks the "X-User-Id" header for an authenticated user (responds 401 if missing),
+// loads the user's roles from the database, and requires that the user has at least one of the
+// supplied requiredRoles. If the user cannot be loaded or lacks any required role the handler
+// responds with 403; otherwise it calls the next handler.
 func RoleMiddleware(db *gorm.DB, requiredRoles ...string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID := c.Get("X-User-Id")
@@ -58,7 +62,17 @@ func RoleMiddleware(db *gorm.DB, requiredRoles ...string) fiber.Handler {
 	}
 }
 
-// PermissionMiddleware checks if user has required permissions
+// PermissionMiddleware returns a Fiber middleware that allows the request to proceed
+// only if the authenticated user has at least one of the specified permissions.
+//
+// PermissionMiddleware reads the user ID from the "X-User-Id" request header and
+// loads the user via the provided UserRepository. If the header is missing it
+// responds 401 ("user not authenticated"); if the user cannot be loaded it
+// responds 403 ("access denied"). It then checks the user's permissions (via
+// user.GetPermissions()) and, if none of the required permissions are present,
+// responds 403 ("insufficient permissions"). When authorization succeeds the
+// middleware stores the user's permissions in the request context under
+// "userPermissions" and calls the next handler.
 func PermissionMiddleware(userRepo repositories.UserRepository, requiredPermissions ...string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID := c.Get("X-User-Id")
@@ -105,12 +119,14 @@ func PermissionMiddleware(userRepo repositories.UserRepository, requiredPermissi
 	}
 }
 
-// AdminOnlyMiddleware restricts access to admin users only
+// AdminOnlyMiddleware returns a Fiber middleware that permits access only to users
+// who have the "admin" or "super_admin" role. It delegates to RoleMiddleware and
+// uses the provided *gorm.DB to load user records and their roles.
 func AdminOnlyMiddleware(db *gorm.DB) fiber.Handler {
 	return RoleMiddleware(db, "admin", "super_admin")
 }
 
-// OwnerOrAdminMiddleware allows access if user is owner of resource or admin
+// resourceUserIDParam is the name of the route parameter that contains the resource's owner user ID.
 func OwnerOrAdminMiddleware(db *gorm.DB, resourceUserIDParam string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID := c.Get("X-User-Id")

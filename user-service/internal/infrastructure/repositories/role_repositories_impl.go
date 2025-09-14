@@ -13,6 +13,8 @@ type roleRepository struct {
 	db *gorm.DB
 }
 
+// NewRoleRepository returns a repositories.RoleRepository implemented by an internal
+// roleRepository that uses the provided *gorm.DB for all role-related database operations.
 func NewRoleRepository(db *gorm.DB) repositories.RoleRepository {
 	return &roleRepository{db: db}
 }

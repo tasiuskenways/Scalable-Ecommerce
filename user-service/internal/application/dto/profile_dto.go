@@ -55,6 +55,9 @@ type ProfileResponse struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
+// NewProfileResponse creates a ProfileResponse DTO from the given entities.UserProfile.
+// It copies all public profile fields (IDs, personal info, address, bio and timestamps).
+// Passing a nil profile will cause a runtime panic due to dereferencing.
 func NewProfileResponse(profile *entities.UserProfile) *ProfileResponse {
 	return &ProfileResponse{
 		ID:          profile.ID,

@@ -40,6 +40,10 @@ type AssignRoleRequest struct {
 	RoleIDs []string `json:"role_ids" validate:"required"`
 }
 
+// NewRoleResponse creates a RoleResponse from a domain Role.
+// 
+// The function maps the role's fields and converts each domain Permission into a
+// PermissionResponse. The provided role must be non-nil.
 func NewRoleResponse(role *entities.Role) *RoleResponse {
 	permissions := make([]PermissionResponse, len(role.Permissions))
 	for i, perm := range role.Permissions {
@@ -62,6 +66,8 @@ func NewRoleResponse(role *entities.Role) *RoleResponse {
 	}
 }
 
+// NewPermissionResponse creates a PermissionResponse DTO from a domain Permission,
+// copying ID, Name, Resource, Action, and Description into the response structure.
 func NewPermissionResponse(permission *entities.Permission) *PermissionResponse {
 	return &PermissionResponse{
 		ID:          permission.ID,

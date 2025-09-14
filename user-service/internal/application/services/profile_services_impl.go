@@ -15,6 +15,9 @@ type profileService struct {
 	userRepo    repositories.UserRepository
 }
 
+// NewProfileService creates a services.ProfileService backed by the provided
+// ProfileRepository and UserRepository. The returned service uses the repositories
+// for profile and user data operations.
 func NewProfileService(profileRepo repositories.ProfileRepository, userRepo repositories.UserRepository) services.ProfileService {
 	return &profileService{
 		profileRepo: profileRepo,

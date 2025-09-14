@@ -8,6 +8,15 @@ import (
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/middleware"
 )
 
+// SetupUserRoutes registers user-related HTTP routes on the given Fiber router.
+// It constructs the repository, service, and handler from the provided dependencies
+// and mounts routes under "/users":
+//   - GET, PUT /users/me          : access and update the current user's profile
+//   - (admin) GET  /users/        : list users
+//   - (admin) GET  /users/:id     : get a user by ID
+//   - (admin) PUT  /users/:id     : update a user by ID
+//   - (admin) DELETE /users/:id   : delete a user by ID
+// The admin routes are protected by AdminOnlyMiddleware using deps.Db.
 func SetupUserRoutes(api fiber.Router, deps RoutesDependencies) {
 	userRepo := repositories.NewUserRepository(deps.Db)
 	userService := services.NewUserService(userRepo, deps.Db)

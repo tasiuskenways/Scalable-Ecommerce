@@ -7,6 +7,21 @@ import (
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/handlers"
 )
 
+// SetupProfileRoutes registers profile-related HTTP routes on the given Fiber router.
+// It wires the user and profile repositories, constructs the profile service and handler,
+// and mounts routes under the "/profiles" base path.
+//
+// Registered routes:
+//   - GET  /profiles/me                     -> GetMyProfile
+//   - POST /profiles/me                     -> CreateProfile
+//   - PUT  /profiles/me                     -> UpdateMyProfile
+//   - GET  /profiles/users/:userId/profile  -> GetProfile  (registered for both admin and owner groups)
+//   - POST /profiles/users/:userId/profile  -> CreateProfile (admin)
+//   - PUT  /profiles/users/:userId/profile  -> UpdateProfile (admin)
+//   - DELETE /profiles/users/:userId/profile -> DeleteProfile (admin)
+//
+// Note: the GET /profiles/users/:userId/profile endpoint is intentionally registered in both
+// admin and owner groups in the current routing setup.
 func SetupProfileRoutes(api fiber.Router, deps RoutesDependencies) {
 	userRepo := repositories.NewUserRepository(deps.Db)
 	profileRepo := repositories.NewProfileRepository(deps.Db)

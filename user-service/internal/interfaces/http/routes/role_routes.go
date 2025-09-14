@@ -7,6 +7,13 @@ import (
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/handlers"
 )
 
+// SetupRoleRoutes registers role-related HTTP endpoints on the provided Fiber router.
+// It constructs role, permission, and user repositories and a RoleService/RoleHandler
+// from the provided dependencies, then mounts admin routes under "/roles" for CRUD,
+// assignment, and permissions (POST "/", GET "/", GET "/:id", PUT "/:id", DELETE "/:id",
+// POST "/assign", GET "/users/:userId", GET "/permissions/all"). It also exposes a
+// public endpoint at "/user/roles" that delegates to the handler but returns HTTP 401
+// with JSON {"error":"user not authenticated"} if the "X-User-Id" request header is absent.
 func SetupRoleRoutes(api fiber.Router, deps RoutesDependencies) {
 	roleRepo := repositories.NewRoleRepository(deps.Db)
 	permissionRepo := repositories.NewPermissionRepository(deps.Db)

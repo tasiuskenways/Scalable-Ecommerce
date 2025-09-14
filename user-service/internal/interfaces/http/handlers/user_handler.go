@@ -13,6 +13,8 @@ type UserHandler struct {
 	userService services.UserService
 }
 
+// NewUserHandler creates a UserHandler wired with the provided UserService.
+// The returned handler uses the service to fulfill user-related HTTP requests.
 func NewUserHandler(userService services.UserService) *UserHandler {
 	return &UserHandler{
 		userService: userService,
