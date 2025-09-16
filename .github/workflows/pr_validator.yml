@@ -38,7 +38,7 @@ jobs:
               if $user == "true" then {service:"user"} else empty end,
               if $product == "true" then {service:"product"} else empty end,
               if $crypto == "true" then {service:"crypto"} else empty end,
-              if $shopping_cart == "true" then {service:"shopping_cart"} else empty end
+              if $shopping_cart == "true" then {service:"shopping-cart"} else empty end
             ] }')
 
           if [ "$(echo "$services" | jq '.include | length')" -eq 0 ]; then
