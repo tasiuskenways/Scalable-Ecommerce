@@ -1,0 +1,12 @@
+reviews:
+  profile: chill
+  high_level_summary: true
+  request_changes_workflow: true
+  auto_review:
+    enabled: true
+    drafts: true
+  tools:
+    eslint:
+      enabled: true
+    gitleaks:
+      enabled: true
