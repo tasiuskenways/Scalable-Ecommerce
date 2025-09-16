@@ -50,9 +50,20 @@ func (r *cartRepository) Update(ctx context.Context, cart *entities.Cart) error 
 }
 
 func (r *cartRepository) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&entities.Cart{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("cart_id = ?", id).Delete(&entities.CartItem{}).Error; err != nil {
+			return err
+		}
+		return tx.Delete(&entities.Cart{}, "id = ?", id).Error
+	})
 }
 
 func (r *cartRepository) DeleteByUserID(ctx context.Context, userID string) error {
-	return r.db.WithContext(ctx).Where("user_id = ?", userID).Delete(&entities.Cart{}).Error
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		sub := tx.Model(&entities.Cart{}).Select("id").Where("user_id = ?", userID)
+		if err := tx.Where("cart_id IN (?)", sub).Delete(&entities.CartItem{}).Error; err != nil {
+			return err
+		}
+		return tx.Where("user_id = ?", userID).Delete(&entities.Cart{}).Error
+	})
 }

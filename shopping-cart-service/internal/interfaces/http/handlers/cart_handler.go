@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/tasiuskenways/scalable-ecommerce/shopping-cart-service/internal/application/dto"
 	"github.com/tasiuskenways/scalable-ecommerce/shopping-cart-service/internal/domain/services"
 	"github.com/tasiuskenways/scalable-ecommerce/shopping-cart-service/internal/utils"
@@ -40,6 +41,13 @@ func (h *CartHandler) AddItemToCart(c *fiber.Ctx) error {
 	var req dto.AddItemRequest
 	if err := c.BodyParser(&req); err != nil {
 		return utils.ErrorResponse(c, fiber.StatusBadRequest, "Invalid request body")
+	}
+
+	if _, err := uuid.Parse(req.ProductID); err != nil {
+		return utils.ErrorResponse(c, fiber.StatusBadRequest, "Invalid product_id")
+	}
+	if req.Quantity < 1 {
+		return utils.ErrorResponse(c, fiber.StatusBadRequest, "Quantity must be >= 1")
 	}
 
 	cart, err := h.cartService.AddItemToCart(c, userID, &req)
