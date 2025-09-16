@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/entities"
+	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/repositories"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +13,7 @@ type productRepository struct {
 	db *gorm.DB
 }
 
-func NewProductRepository(db *gorm.DB) *productRepository {
+func NewProductRepository(db *gorm.DB) repositories.ProductRepository {
 	return &productRepository{db: db}
 }
 
@@ -150,4 +151,10 @@ func (r *categoryRepository) Update(ctx context.Context, category *entities.Cate
 
 func (r *categoryRepository) Delete(ctx context.Context, id string) error {
 	return r.db.WithContext(ctx).Delete(&entities.Category{}, "id = ?", id).Error
+}
+
+func (r *productRepository) GetByIDs(ctx context.Context, ids []string) ([]*entities.Product, error) {
+	var products []*entities.Product
+	err := r.db.WithContext(ctx).Where("id IN (?)", ids).Find(&products).Error
+	return products, err
 }

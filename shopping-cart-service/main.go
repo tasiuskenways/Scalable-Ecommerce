@@ -3,30 +3,23 @@ package main
 import (
 	"flag"
 	"log"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/config"
-	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/infrastructure/db"
-	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/infrastructure/seed"
-	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/interfaces/http/routes"
+	"github.com/tasiuskenways/scalable-ecommerce/shopping-cart-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/shopping-cart-service/internal/infrastructure/db"
+	"github.com/tasiuskenways/scalable-ecommerce/shopping-cart-service/internal/interfaces/http/routes"
 	"gorm.io/gorm"
 )
 
 func main() {
-
-	log.SetOutput(os.Stdout) // force logs to stdout
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-
 	cfg := config.Load()
 
 	runMigration := flag.Bool("migrate", false, "Run migration")
 	resetDb := flag.Bool("resetDb", false, "Reset DB")
-	seedData := flag.Bool("seedData", false, "Seed data")
 	flag.Parse()
 
 	var postgres *gorm.DB
@@ -42,12 +35,6 @@ func main() {
 	postgres, err = db.ConnectWithoutMigration(cfg)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
-	}
-
-	if *seedData {
-		seed.SeedData(postgres)
-		log.Println("Database seeded successfully!")
-		return
 	}
 
 	redis, err := db.NewRedisConnection(cfg)
@@ -78,7 +65,7 @@ func main() {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
-		AllowHeaders: "Origin,Content-Type,Accept,Authorization",
+		AllowHeaders: "Origin,Content-Type,Accept,Authorization,X-User-Id",
 	}))
 
 	routes.SetupRoutes(app, routes.RoutesDependencies{
@@ -91,5 +78,4 @@ func main() {
 	if err := app.Listen(":" + cfg.AppPort); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
-
 }

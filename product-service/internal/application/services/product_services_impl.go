@@ -168,3 +168,7 @@ func (s *categoryService) DeleteCategory(ctx context.Context, id string) error {
 
 	return s.categoryRepo.Delete(ctx, id)
 }
+
+func (s *productService) GetProductsByIds(ctx context.Context, ids []string) ([]*entities.Product, error) {
+	return s.productRepo.GetByIDs(ctx, ids)
+}

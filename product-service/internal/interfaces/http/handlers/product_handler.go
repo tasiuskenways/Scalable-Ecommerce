@@ -255,3 +255,17 @@ func (h *ProductHandler) DeleteCategory(c *fiber.Ctx) error {
 
 	return utils.SuccessResponse(c, "Category deleted successfully", nil)
 }
+
+func (h *ProductHandler) GetProductsByIds(c *fiber.Ctx) error {
+	var req dto.GetProductsByIdsRequest
+	if err := c.BodyParser(&req); err != nil {
+		return utils.ErrorResponse(c, fiber.StatusBadRequest, "Invalid request body")
+	}
+
+	products, err := h.productService.GetProductsByIds(c.Context(), req.Ids)
+	if err != nil {
+		return utils.ErrorResponse(c, fiber.StatusInternalServerError, "Failed to retrieve products")
+	}
+
+	return utils.SuccessResponse(c, "Products retrieved successfully", products)
+}

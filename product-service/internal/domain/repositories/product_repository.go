@@ -12,6 +12,7 @@ type ProductRepository interface {
 	GetBySKU(ctx context.Context, sku string) (*entities.Product, error)
 	GetAll(ctx context.Context, limit, offset int) ([]*entities.Product, error)
 	GetByCategory(ctx context.Context, categoryID string, limit, offset int) ([]*entities.Product, error)
+	GetByIDs(ctx context.Context, ids []string) ([]*entities.Product, error)
 	Update(ctx context.Context, product *entities.Product) error
 	Delete(ctx context.Context, id string) error
 	UpdateStock(ctx context.Context, id string, stock int) error

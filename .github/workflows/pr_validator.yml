@@ -24,6 +24,8 @@ jobs:
               - 'product-service/**'
             crypto:
               - 'crypto-service/**'
+            shopping_cart:
+              - 'shopping-cart-service/**'
 
       - id: set-matrix
         run: |
@@ -31,10 +33,12 @@ jobs:
             --arg user ${{ steps.changes.outputs.user }} \
             --arg product ${{ steps.changes.outputs.product }} \
             --arg crypto ${{ steps.changes.outputs.crypto }} \
+            --arg shopping_cart ${{ steps.changes.outputs.shopping_cart }} \
             '{ include: [
               if $user == "true" then {service:"user"} else empty end,
               if $product == "true" then {service:"product"} else empty end,
-              if $crypto == "true" then {service:"crypto"} else empty end
+              if $crypto == "true" then {service:"crypto"} else empty end,
+              if $shopping_cart == "true" then {service:"shopping-cart"} else empty end
             ] }')
 
           if [ "$(echo "$services" | jq '.include | length')" -eq 0 ]; then

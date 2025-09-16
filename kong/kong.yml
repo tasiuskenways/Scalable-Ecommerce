@@ -80,8 +80,8 @@ services:
       # Public product browsing
       - name: product-public
         paths:
-          - /api/product$
-          - /api/categories$
+          - /api/product
+          - /api/categories
         strip_path: false
         plugins:
           - name: user-auth-token-handler
@@ -118,6 +118,19 @@ services:
           - name: user-auth-token-handler
             config:
               required_roles: ["admin", "super_admin"]
+
+  - name: shopping-cart-service
+    url: http://shopping-cart-service:3005
+    routes:
+      # Cart management (authenticated users only)
+      - name: cart-routes
+        paths:
+          - /api/cart
+        strip_path: false
+        plugins:
+          - name: user-auth-token-handler
+            config:
+              allow_public: true  
 
 # Example usage for different access patterns:
 # 1. Public access: allow_public: true

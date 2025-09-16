@@ -11,6 +11,7 @@ type ProductService interface {
 	GetProduct(ctx context.Context, id string) (*entities.Product, error)
 	GetProductBySKU(ctx context.Context, sku string) (*entities.Product, error)
 	GetProducts(ctx context.Context, limit, offset int) ([]*entities.Product, error)
+	GetProductsByIds(ctx context.Context, ids []string) ([]*entities.Product, error)
 	GetProductsByCategory(ctx context.Context, categoryID string, limit, offset int) ([]*entities.Product, error)
 	UpdateProduct(ctx context.Context, product *entities.Product) error
 	DeleteProduct(ctx context.Context, id string) error
