@@ -132,9 +132,59 @@ services:
     expose:
       - 6379
 
+  # -------------------------
+  # Shopping Cart Service
+  # -------------------------
+  shopping-cart-service:
+    build: ./shopping-cart-service
+    env_file: ./shopping-cart-service/.env.cart
+    networks:
+      - internal-net
+    expose:
+      - 3005
+    depends_on:
+      - cart-db
+      - cart-redis
+      - product-service
+
+  cart-db:
+    image: postgres:16-alpine
+    container_name: cart-db
+    env_file: ./shopping-cart-service/.env.cart
+    volumes:
+      - cart-db-data:/var/lib/postgresql/data
+    networks:
+      - internal-net
+    expose:
+      - 5432
+
+  cart-redis:
+    image: redis:7-alpine
+    container_name: cart-redis
+    env_file: ./shopping-cart-service/.env.cart
+    networks:
+      - internal-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: >
+      sh -c "
+        if [ -n '${REDIS_PASSWORD}' ]; then
+          redis-server --requirepass '${REDIS_PASSWORD}'
+        else
+          redis-server
+        fi
+      "
+    expose:
+      - 6379
+
 volumes:
   user-db-data:
   product-db-data:
+  cart-db-data:
 
 networks:
   public-net:   # exposed to host

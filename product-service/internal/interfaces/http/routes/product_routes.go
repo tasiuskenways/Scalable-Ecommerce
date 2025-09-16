@@ -22,6 +22,7 @@ func SetupProductRoutes(api fiber.Router, deps RoutesDependencies) {
 	// Product routes
 	products := api.Group("/products")
 	products.Post("/", productHandler.CreateProduct)
+	products.Post("/ids", productHandler.GetProductsByIds)
 	products.Get("/", productHandler.GetProducts)
 	products.Get("/search", productHandler.SearchProducts)
 	products.Get("/sku/:sku", productHandler.GetProductBySKU)
