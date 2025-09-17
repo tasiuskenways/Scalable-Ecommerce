@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -9,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/config"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/domain/entities"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/infrastructure/db"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/routes"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/middleware"
@@ -22,6 +24,8 @@ func main() {
 
 	runMigration := flag.Bool("migrate", false, "Run migration")
 	resetDb := flag.Bool("resetDb", false, "Reset DB")
+	setRole := flag.String("setRole", "", "User ID to set role for")
+	roleName := flag.String("role", "", "Role name to assign")
 	flag.Parse()
 
 	var postgres *gorm.DB
@@ -36,6 +40,25 @@ func main() {
 	postgres, err = db.ConnectWithoutMigration(cfg)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
+	}
+
+	if *setRole != "" && *roleName != "" {
+		var user entities.User
+		if err := postgres.First(&user, "id = ?", *setRole).Error; err != nil {
+			log.Fatalf("User with ID %s not found", *setRole)
+		}
+
+		var role entities.Role
+		if err := postgres.First(&role, "name = ?", *roleName).Error; err != nil {
+			log.Fatalf("Role with name %s not found", *roleName)
+		}
+
+		if err := postgres.Model(&user).Association("Roles").Replace(&role); err != nil {
+			log.Fatalf("Failed to assign role: %v", err)
+		}
+
+		fmt.Printf("Successfully assigned role '%s' to user '%s'\n", *roleName, *setRole)
+		return
 	}
 
 	redis, err := db.NewRedisConnection(cfg)

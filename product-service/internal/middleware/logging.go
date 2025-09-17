@@ -2,27 +2,36 @@ package middleware
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs/zerolog/log"
 )
 
+const maxDepth = 10
+
 type LogEntry struct {
-	Timestamp    string                 `json:"timestamp"`
-	RequestID    string                 `json:"request_id"`
-	Method       string                 `json:"method"`
-	Path         string                 `json:"path"`
-	Query        string                 `json:"query,omitempty"`
-	IP           string                 `json:"ip"`
-	UserAgent    string                 `json:"user_agent"`
-	Headers      map[string]string      `json:"headers,omitempty"`
-	RequestBody  interface{}            `json:"request_body,omitempty"`
-	StatusCode   int                    `json:"status_code"`
-	ResponseBody interface{}            `json:"response_body,omitempty"`
-	Duration     string                 `json:"duration"`
-	Error        string                 `json:"error,omitempty"`
+	Timestamp    string
+	RequestID    string
+	Method       string
+	Path         string
+	Query        string
+	IP           string
+	UserAgent    string
+	Headers      map[string]string
+	RequestBody  any
+	StatusCode   int
+	ResponseBody any
+	Duration     int64
+	Error        string
+}
+
+var logEntryPool = sync.Pool{
+	New: func() any {
+		return new(LogEntry)
+	},
 }
 
 func RequestResponseLogger() fiber.Handler {
@@ -30,19 +39,38 @@ func RequestResponseLogger() fiber.Handler {
 		start := time.Now()
 		requestID := c.Locals("requestid").(string)
 
+		entry := logEntryPool.Get().(*LogEntry)
+		defer logEntryPool.Put(entry)
+		*entry = LogEntry{}
+
+		// Process request
+		err := c.Next()
+
+		duration := time.Since(start).Milliseconds()
+
 		// Capture request body
-		var requestBody interface{}
+		var requestBody any
 		if len(c.Body()) > 0 && isJSONContent(c) {
-			var body map[string]interface{}
+			var body map[string]any
 			if err := json.Unmarshal(c.Body(), &body); err == nil {
-				// Mask sensitive fields
-				requestBody = maskSensitiveData(body)
+				requestBody = maskSensitiveData(body, 0)
 			} else {
 				requestBody = string(c.Body())
 			}
 		}
 
-		// Capture request headers (excluding sensitive ones)
+		// Capture response body
+		var responseBody any
+		respBody := c.Response().Body()
+		if len(respBody) > 0 && isJSONResponse(c) {
+			var body map[string]any
+			if err := json.Unmarshal(respBody, &body); err == nil {
+				responseBody = maskSensitiveData(body, 0)
+			} else {
+				responseBody = string(respBody)
+			}
+		}
+
 		headers := make(map[string]string)
 		c.Request().Header.VisitAll(func(key, value []byte) {
 			k := string(key)
@@ -51,48 +79,38 @@ func RequestResponseLogger() fiber.Handler {
 			}
 		})
 
-		// Process request
-		err := c.Next()
+		entry.Timestamp = start.Format(time.RFC3339)
+		entry.RequestID = requestID
+		entry.Method = c.Method()
+		entry.Path = c.Path()
+		entry.Query = string(c.Request().URI().QueryString())
+		entry.IP = c.IP()
+		entry.UserAgent = c.Get("User-Agent")
+		entry.Headers = headers
+		entry.RequestBody = requestBody
+		entry.StatusCode = c.Response().StatusCode()
+		entry.ResponseBody = responseBody
+		entry.Duration = duration
 
-		// Calculate duration
-		duration := time.Since(start)
-
-		// Capture response body (Fiber stores it internally)
-		var responseBody interface{}
-		respBody := c.Response().Body()
-		if len(respBody) > 0 && isJSONResponse(c) {
-			var body map[string]interface{}
-			if err := json.Unmarshal(respBody, &body); err == nil {
-				responseBody = maskSensitiveData(body)
-			} else {
-				responseBody = string(respBody)
-			}
-		}
-
-		// Create log entry
-		logEntry := LogEntry{
-			Timestamp:    start.Format(time.RFC3339),
-			RequestID:    requestID,
-			Method:       c.Method(),
-			Path:         c.Path(),
-			Query:        string(c.Request().URI().QueryString()),
-			IP:           c.IP(),
-			UserAgent:    c.Get("User-Agent"),
-			Headers:      headers,
-			RequestBody:  requestBody,
-			StatusCode:   c.Response().StatusCode(),
-			ResponseBody: responseBody,
-			Duration:     fmt.Sprintf("%dms", duration.Milliseconds()),
-		}
-
-		// Add error if exists
 		if err != nil {
-			logEntry.Error = err.Error()
+			entry.Error = err.Error()
 		}
 
-		// Log the entry
-		logJSON, _ := json.Marshal(logEntry)
-		fmt.Println(string(logJSON))
+		log.Info().
+			Str("timestamp", entry.Timestamp).
+			Str("request_id", entry.RequestID).
+			Str("method", entry.Method).
+			Str("path", entry.Path).
+			Str("query", entry.Query).
+			Str("ip", entry.IP).
+			Str("user_agent", entry.UserAgent).
+			Interface("headers", entry.Headers).
+			Interface("request_body", entry.RequestBody).
+			Int("status_code", entry.StatusCode).
+			Interface("response_body", entry.ResponseBody).
+			Int64("duration_ms", entry.Duration).
+			Str("error", entry.Error).
+			Send()
 
 		return err
 	}
@@ -126,7 +144,11 @@ func isSensitiveHeader(header string) bool {
 	return false
 }
 
-func maskSensitiveData(data map[string]interface{}) map[string]interface{} {
+func maskSensitiveData(data map[string]any, depth int) map[string]any {
+	if depth > maxDepth {
+		return nil
+	}
+
 	sensitiveFields := []string{
 		"password",
 		"token",
@@ -141,7 +163,7 @@ func maskSensitiveData(data map[string]interface{}) map[string]interface{} {
 		"ssn",
 	}
 
-	masked := make(map[string]interface{})
+	masked := make(map[string]any)
 	for k, v := range data {
 		keyLower := strings.ToLower(k)
 		isSensitive := false
@@ -157,8 +179,8 @@ func maskSensitiveData(data map[string]interface{}) map[string]interface{} {
 			masked[k] = "***MASKED***"
 		} else {
 			switch val := v.(type) {
-			case map[string]interface{}:
-				masked[k] = maskSensitiveData(val)
+			case map[string]any:
+				masked[k] = maskSensitiveData(val, depth+1)
 			default:
 				masked[k] = v
 			}
