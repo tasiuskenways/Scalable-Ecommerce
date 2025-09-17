@@ -6,12 +6,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/config"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/infrastructure/db"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/interfaces/http/routes"
+	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/middleware"
 	"github.com/tasiuskenways/scalable-ecommerce/user-service/internal/utils/jwt"
 	"gorm.io/gorm"
 )
@@ -63,12 +63,10 @@ func main() {
 	})
 
 	app.Use(requestid.New())
-
-	app.Use(logger.New(logger.Config{
-		Format: "------------------------\n Time: ${time}\n Status: ${status}\n Latency: ${latency}\n IP: ${ip}\n Method: ${method}\n Path: ${path} \n RequestId: ${locals:requestid}\n------------------------\n",
-	}))
-
 	app.Use(recover.New())
+
+	// Add comprehensive request/response logging
+	app.Use(middleware.RequestResponseLogger())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",

@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/config"
 	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/interfaces/http/routes"
+	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/middleware"
 	"github.com/tasiuskenways/scalable-ecommerce/crypto-service/internal/utils/crypto"
 )
 
@@ -47,8 +48,10 @@ func main() {
 	})
 
 	app.Use(requestid.New())
-
 	app.Use(recover.New())
+
+	// Add comprehensive request/response logging
+	app.Use(middleware.RequestResponseLogger())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
