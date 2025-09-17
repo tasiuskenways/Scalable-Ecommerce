@@ -3,8 +3,8 @@ reviews:
   high_level_summary: true
   request_changes_workflow: true
   auto_review:
-    enabled: true
-    drafts: true
+    enabled: false
+    drafts: false
   tools:
     eslint:
       enabled: true
