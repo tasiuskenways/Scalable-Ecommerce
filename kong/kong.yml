@@ -130,7 +130,114 @@ services:
         plugins:
           - name: user-auth-token-handler
             config:
-              allow_public: true  
+              allow_public: true
+
+  - name: store-service
+    url: http://store-service:3006
+    routes:
+      # Health check (public)
+      - name: store-health
+        paths:
+          - /api/health
+        strip_path: false
+        plugins:
+          - name: user-auth-token-handler
+            config:
+              allow_public: true
+
+      # Store management (authenticated users)
+      - name: store-management
+        paths:
+          - /api/stores
+        strip_path: false
+        methods:
+          - POST
+          - GET
+        plugins:
+          - name: user-auth-token-handler
+          # Any authenticated user can create stores and view their own stores
+
+      # Store access by ID or slug (store members only)
+      - name: store-access
+        paths:
+          - ~/api/stores/[0-9a-f-]+$
+          - ~/api/stores/slug/
+        strip_path: false
+        methods:
+          - GET
+        plugins:
+          - name: user-auth-token-handler
+          # Store member validation happens in service
+
+      # Store updates and deletion (store admin/owner only)
+      - name: store-modify
+        paths:
+          - ~/api/stores/[0-9a-f-]+$
+        strip_path: false
+        methods:
+          - PUT
+          - DELETE
+        plugins:
+          - name: user-auth-token-handler
+          # Permission validation happens in service based on store roles
+
+      # Member invitation (store admin/owner only)
+      - name: store-invite
+        paths:
+          - ~/api/stores/[0-9a-f-]+/invite$
+        strip_path: false
+        methods:
+          - POST
+        plugins:
+          - name: user-auth-token-handler
+          # Permission validation happens in service
+
+      # Member management (store members can view, admin/owner can manage)
+      - name: store-members
+        paths:
+          - ~/api/stores/[0-9a-f-]+/members
+          - ~/api/stores/[0-9a-f-]+/invitations
+        strip_path: false
+        methods:
+          - GET
+        plugins:
+          - name: user-auth-token-handler
+          # Permission validation happens in service
+
+      # Member role updates and removal (store admin/owner only)
+      - name: store-member-management
+        paths:
+          - ~/api/stores/[0-9a-f-]+/members/[0-9a-f-]+/role$
+          - ~/api/stores/[0-9a-f-]+/members/[0-9a-f-]+$
+        strip_path: false
+        methods:
+          - PUT
+          - DELETE
+        plugins:
+          - name: user-auth-token-handler
+          # Permission validation happens in service
+
+      # Get user invitations (authenticated users)
+      - name: store-user-invitations
+        paths:
+          - /api/invitations
+        strip_path: false
+        methods:
+          - GET
+        plugins:
+          - name: user-auth-token-handler
+          # Any authenticated user can view their invitations
+
+      # Accept invitation (authenticated users)
+      - name: store-invitation-accept
+        paths:
+          - /api/invitations/accept
+        strip_path: false
+        methods:
+          - POST
+        plugins:
+          - name: user-auth-token-handler
+          # Any authenticated user can accept invitations sent to them
 
 # Example usage for different access patterns:
 # 1. Public access: allow_public: true

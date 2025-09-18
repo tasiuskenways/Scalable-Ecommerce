@@ -23,6 +23,7 @@ services:
       - crypto-service
       - user-service
       - product-service
+      - store-service
 
   crypto-service:
     build:
@@ -181,10 +182,68 @@ services:
     expose:
       - 6379
 
+  # -------------------------
+  # Store Service
+  # -------------------------
+  store-service:
+    build: ./store-service
+    env_file: ./store-service/.env.store
+    networks:
+      - internal-net
+    expose:
+      - 3006
+    depends_on:
+      store-db:
+        condition: service_healthy
+      store-redis:
+        condition: service_healthy
+
+  store-db:
+    image: postgres:16-alpine
+    container_name: store-db
+    env_file: ./store-service/.env.store
+    volumes:
+      - store-db-data:/var/lib/postgresql/data
+    networks:
+      - internal-net
+    expose:
+      - 5432
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d store_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  store-redis:
+    image: redis:7-alpine
+    container_name: store-redis
+    env_file: ./store-service/.env.store
+    networks:
+      - internal-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: >
+      sh -c "
+        if [ -n '${REDIS_PASSWORD}' ]; then
+          redis-server --requirepass '${REDIS_PASSWORD}'
+        else
+          redis-server
+        fi
+      "
+    expose:
+      - 6379
+
 volumes:
   user-db-data:
   product-db-data:
   cart-db-data:
+  store-db-data:
 
 networks:
   public-net:   # exposed to host

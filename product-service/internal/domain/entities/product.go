@@ -15,7 +15,8 @@ type Product struct {
 	Stock       int            `json:"stock" gorm:"default:0"`
 	CategoryID  string         `json:"category_id" gorm:"type:uuid;not null"`
 	Category    Category       `json:"category" gorm:"foreignKey:CategoryID"`
-	SKU         string         `json:"sku" gorm:"unique;not null"`
+	StoreID     string         `json:"store_id" gorm:"type:uuid;not null;index;uniqueIndex:idx_store_sku"`
+	SKU         string         `json:"sku" gorm:"not null;uniqueIndex:idx_store_sku"`
 	IsActive    bool           `json:"is_active" gorm:"default:true"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`

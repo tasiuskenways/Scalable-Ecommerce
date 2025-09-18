@@ -2,12 +2,16 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/entities"
 	"github.com/tasiuskenways/scalable-ecommerce/product-service/internal/domain/repositories"
 	"gorm.io/gorm"
 )
+
+var ErrProductNotFound = errors.New("product not found")
+var ErrCategoryNotFound = errors.New("category not found")
 
 type productRepository struct {
 	db *gorm.DB
@@ -25,6 +29,9 @@ func (r *productRepository) GetByID(ctx context.Context, id string) (*entities.P
 	var product entities.Product
 	err := r.db.WithContext(ctx).Preload("Category").Where("id = ?", id).First(&product).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrProductNotFound
+		}
 		return nil, err
 	}
 	return &product, nil
@@ -34,6 +41,9 @@ func (r *productRepository) GetBySKU(ctx context.Context, sku string) (*entities
 	var product entities.Product
 	err := r.db.WithContext(ctx).Preload("Category").Where("sku = ?", sku).First(&product).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrProductNotFound
+		}
 		return nil, err
 	}
 	return &product, nil
@@ -116,6 +126,9 @@ func (r *categoryRepository) GetByID(ctx context.Context, id string) (*entities.
 	var category entities.Category
 	err := r.db.WithContext(ctx).Where("id = ?", id).First(&category).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrCategoryNotFound
+		}
 		return nil, err
 	}
 	return &category, nil
@@ -125,6 +138,9 @@ func (r *categoryRepository) GetByName(ctx context.Context, name string) (*entit
 	var category entities.Category
 	err := r.db.WithContext(ctx).Where("name = ?", name).First(&category).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrCategoryNotFound
+		}
 		return nil, err
 	}
 	return &category, nil

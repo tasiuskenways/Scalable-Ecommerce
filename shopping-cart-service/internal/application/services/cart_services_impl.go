@@ -47,6 +47,7 @@ func (s *cartService) GetCart(ctx *fiber.Ctx, userID string) (*dto.CartResponse,
 		return &dto.CartResponse{
 			UserID:     userID,
 			Items:      []dto.CartItemResponse{},
+			Stores:     []dto.StoreCartItems{},
 			TotalItems: 0,
 			TotalPrice: decimal.NewFromFloat(0),
 		}, nil
@@ -63,6 +64,7 @@ func (s *cartService) GetCart(ctx *fiber.Ctx, userID string) (*dto.CartResponse,
 		ID:         cart.ID,
 		UserID:     cart.UserID,
 		Items:      []dto.CartItemResponse{},
+		Stores:     []dto.StoreCartItems{},
 		TotalItems: 0,
 		TotalPrice: decimal.NewFromFloat(0),
 		CreatedAt:  cart.CreatedAt,
@@ -136,6 +138,7 @@ func (s *cartService) GetCart(ctx *fiber.Ctx, userID string) (*dto.CartResponse,
 				SKU:      product.SKU,
 				IsActive: product.IsActive,
 				Stock:    product.Stock,
+				StoreID:  product.StoreID,
 			},
 			Available:   available,
 			StockStatus: stockStatus,
@@ -144,6 +147,31 @@ func (s *cartService) GetCart(ctx *fiber.Ctx, userID string) (*dto.CartResponse,
 		cartResponse.Items = append(cartResponse.Items, cartItem)
 		cartResponse.TotalItems += item.Quantity
 		cartResponse.TotalPrice = cartResponse.TotalPrice.Add(item.GetSubtotal())
+	}
+
+	// Group items by store
+	storeGroups := make(map[string]*dto.StoreCartItems)
+	for _, item := range cartResponse.Items {
+		if item.Product != nil {
+			storeID := item.Product.StoreID
+			if storeGroup, exists := storeGroups[storeID]; exists {
+				storeGroup.Items = append(storeGroup.Items, item)
+				storeGroup.ItemCount += item.Quantity
+				storeGroup.StoreTotal = storeGroup.StoreTotal.Add(item.Subtotal)
+			} else {
+				storeGroups[storeID] = &dto.StoreCartItems{
+					StoreID:    storeID,
+					Items:      []dto.CartItemResponse{item},
+					ItemCount:  item.Quantity,
+					StoreTotal: item.Subtotal,
+				}
+			}
+		}
+	}
+
+	// Convert map to slice
+	for _, storeGroup := range storeGroups {
+		cartResponse.Stores = append(cartResponse.Stores, *storeGroup)
 	}
 
 	return cartResponse, nil
