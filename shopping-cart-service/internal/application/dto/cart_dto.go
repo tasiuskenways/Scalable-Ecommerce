@@ -33,12 +33,21 @@ type ProductInfo struct {
 	SKU      string          `json:"sku"`
 	IsActive bool            `json:"is_active"`
 	Stock    int             `json:"stock"`
+	StoreID  string          `json:"store_id"`
+}
+
+type StoreCartItems struct {
+	StoreID    string             `json:"store_id"`
+	Items      []CartItemResponse `json:"items"`
+	ItemCount  int                `json:"item_count"`
+	StoreTotal decimal.Decimal    `json:"store_total"`
 }
 
 type CartResponse struct {
 	ID         string             `json:"id"`
 	UserID     string             `json:"user_id"`
 	Items      []CartItemResponse `json:"items"`
+	Stores     []StoreCartItems   `json:"stores"`
 	TotalItems int                `json:"total_items"`
 	TotalPrice decimal.Decimal    `json:"total_price"`
 	CreatedAt  time.Time          `json:"created_at"`

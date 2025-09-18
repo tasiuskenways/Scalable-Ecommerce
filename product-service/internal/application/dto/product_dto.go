@@ -6,6 +6,7 @@ type CreateProductRequest struct {
 	Price       float64 `json:"price" validate:"required,min=0"`
 	Stock       int     `json:"stock" validate:"min=0"`
 	CategoryID  string  `json:"category_id" validate:"required,uuid"`
+	StoreID     string  `json:"store_id" validate:"required,uuid"`
 	SKU         string  `json:"sku" validate:"required,min=1,max=100"`
 }
 
@@ -30,6 +31,7 @@ type ProductResponse struct {
 	Stock       int               `json:"stock"`
 	CategoryID  string            `json:"category_id"`
 	Category    *CategoryResponse `json:"category,omitempty"`
+	StoreID     string            `json:"store_id"`
 	SKU         string            `json:"sku"`
 	IsActive    bool              `json:"is_active"`
 	CreatedAt   string            `json:"created_at"`

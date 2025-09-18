@@ -23,6 +23,7 @@ type ProductResponse struct {
 	Stock       int      `json:"stock"`
 	CategoryID  string   `json:"category_id"`
 	Category    Category `json:"category"`
+	StoreID     string   `json:"store_id"`
 	SKU         string   `json:"sku"`
 	IsActive    bool     `json:"is_active"`
 	CreatedAt   string   `json:"created_at"`
